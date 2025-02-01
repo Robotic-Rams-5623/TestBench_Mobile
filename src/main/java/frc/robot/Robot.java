@@ -44,6 +44,7 @@ public class Robot extends TimedRobot {
   private final SparkMax m_motor2;
   private final SparkMax m_motor3;
   private SparkMaxConfig motor1Config;
+  private SparkMaxConfig motor2Config;
   private final SparkFlex m_motor4;
   private SparkFlexConfig motor4Config;
   // JOYSTICKS
@@ -52,12 +53,13 @@ public class Robot extends TimedRobot {
 
   /** Called once at the beginning of the robot program. */
   public Robot() {
-    m_motor1 = new SparkMax(kMotor_1, MotorType.kBrushless);
-    m_motor2 = new SparkMax(kMotor_2, MotorType.kBrushless);
+    m_motor1 = new SparkMax(kMotor_1, MotorType.kBrushed);
+    m_motor2 = new SparkMax(kMotor_2, MotorType.kBrushed);
     m_motor3 = new SparkMax(kMotor_3, MotorType.kBrushless);
     m_motor4 = new SparkFlex(kMotor_4, MotorType.kBrushless);
 
     motor1Config = new SparkMaxConfig();
+    motor2Config = new SparkMaxConfig();
     motor4Config = new SparkFlexConfig();
 
     motor1Config
@@ -69,6 +71,13 @@ public class Robot extends TimedRobot {
     // motor1Config.closedLoop
     //     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
     //     .pid(1.0, 0.0, 0.0);
+    motor2Config
+      .inverted(false)
+      .idleMode(IdleMode.kBrake)
+      .follow(m_motor1, true);
+    // motor2Config.encoder
+    //   .positionConversionFactor(1000)
+    //   .velocityConversionFactor(1000);
     
     motor4Config
         .inverted(true)
@@ -81,7 +90,7 @@ public class Robot extends TimedRobot {
         .pid(1.0, 0.0, 0.0);
     
     m_motor1.configure(motor1Config, ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
-    m_motor2.configure(motor1Config, ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
+    m_motor2.configure(motor2Config, ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
     m_motor3.configure(motor1Config, ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
     m_motor4.configure(motor4Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
 
@@ -103,42 +112,26 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     if(m_xbox.getAButton()) {
       //Move motor1 in one direction
-      m_motor1.set(0.4); 
+      m_motor1.set(.25);
+      //m_motor2.set(0.25); 
       // m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0.5568968);
       // m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0.5568968);
     }
     else if(m_xbox.getBButton()) {
       // Move motor1 in other direction
-      m_motor1.set(-0.4); 
-      // m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0.5568968);
+      m_motor1.set(-.25 ); 
+      //m_motor2.set(-0.25); 
+      //// m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0.5568968);
       // m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0.5568968);
     } 
     else {
       // Stop motor1
       m_motor1.set(0); 
+      //m_motor2.set(0); 
       // m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0);
       // m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0);
     }
       
-    if(m_xbox.getXButton()) {
-      //Move motor2 in one direction
-      m_motor2.set(.4);
-      // m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0.5568968);
-      // m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0.5568968);
-    }
-    else if(m_xbox.getYButton()) {
-      // Move motor2 in other direction
-      m_motor2.set(-0.4); 
-      // m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0.5568968);
-      // m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0.5568968);
-    }
-    else {
-      // Stop motor2
-      m_motor2.set(0); 
-      // m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0);
-      // m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0);
-    }
-
 
   }
 }
