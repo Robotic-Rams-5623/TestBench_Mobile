@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+
+
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -15,10 +17,12 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.DigitalInput;
 //import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
+
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * This sample program shows how to control a motor using a joystick. In the operator control part
@@ -39,63 +43,86 @@ public class Robot extends TimedRobot {
   //private static final int kJoystickPort = 1;
   private static final int kXboxPort = 0;
 
+  // DIGITAL INPUTS
+  private final DigitalInput m_di0;
+
+
   // MOTORS
   private final SparkMax m_motor1;
   private final SparkMax m_motor2;
   private final SparkMax m_motor3;
+  private final SparkFlex m_motor4;
   private SparkMaxConfig motor1Config;
   private SparkMaxConfig motor2Config;
-  private final SparkFlex m_motor4;
+  private SparkFlexConfig motor3Config;
   private SparkFlexConfig motor4Config;
+
   // JOYSTICKS
   // private final Joystick m_joystick;
   private final XboxController m_xbox;
 
   /** Called once at the beginning of the robot program. */
   public Robot() {
-    m_motor1 = new SparkMax(kMotor_1, MotorType.kBrushed);
-    m_motor2 = new SparkMax(kMotor_2, MotorType.kBrushed);
+    m_motor1 = new SparkMax(kMotor_1, MotorType.kBrushless);
+    m_motor2 = new SparkMax(kMotor_2, MotorType.kBrushless);
     m_motor3 = new SparkMax(kMotor_3, MotorType.kBrushless);
     m_motor4 = new SparkFlex(kMotor_4, MotorType.kBrushless);
 
     motor1Config = new SparkMaxConfig();
     motor2Config = new SparkMaxConfig();
+    motor3Config = new SparkFlexConfig();
     motor4Config = new SparkFlexConfig();
 
     motor1Config
-        .inverted(true)
-        .idleMode(IdleMode.kBrake);
+        .inverted(false)
+        .idleMode(IdleMode.kCoast);
     motor1Config.encoder
         .positionConversionFactor(1000)
         .velocityConversionFactor(1000);
-    // motor1Config.closedLoop
-    //     .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-    //     .pid(1.0, 0.0, 0.0);
+    motor1Config.closedLoop
+         .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+         .pid(1.0, 0.0, 0.0);
+         
+    
     motor2Config
       .inverted(false)
-      .idleMode(IdleMode.kBrake)
-      .follow(m_motor1, true);
-    // motor2Config.encoder
-    //   .positionConversionFactor(1000)
-    //   .velocityConversionFactor(1000);
+      .idleMode(IdleMode.kCoast);
+    motor2Config.encoder
+       .positionConversionFactor(1000)
+       .velocityConversionFactor(1000);
+       motor3Config.closedLoop
+       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+       .pid(1.0, 0.0, 0.0);
+       
+    motor3Config
+       .inverted(true)
+       .idleMode(IdleMode.kCoast);
+    motor3Config.encoder
+       .positionConversionFactor(1000)
+       .velocityConversionFactor(1000);
+    motor3Config.closedLoop
+        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+        .pid(1.0, 0.0, 0.0);
     
     motor4Config
-        .inverted(true)
+        .inverted(false)
         .idleMode(IdleMode.kCoast);
     motor4Config.encoder
         .positionConversionFactor(1000)
         .velocityConversionFactor(1000);
-    motor4Config.closedLoop
-        .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
-        .pid(1.0, 0.0, 0.0);
+        motor4Config.closedLoop
+       .feedbackSensor(FeedbackSensor.kPrimaryEncoder)
+       .pid(1.0, 0.0, 0.0);
     
     m_motor1.configure(motor1Config, ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
     m_motor2.configure(motor2Config, ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
-    m_motor3.configure(motor1Config, ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
-    m_motor4.configure(motor4Config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+    m_motor3.configure(motor3Config, ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
+    m_motor4.configure(motor4Config, ResetMode.kResetSafeParameters,PersistMode.kNoPersistParameters);
 
     // m_joystick = new Joystick(kJoystickPort);
     m_xbox = new XboxController(kXboxPort);
+    m_di0 = new DigitalInput(0);
+    
   }
 
   /*
@@ -104,6 +131,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putBoolean("Digital Input", m_di0.get());
     // SmartDashboard.putNumber("Encoder", m_encoder.getDistance());
   }
 
@@ -111,27 +139,39 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     if(m_xbox.getAButton()) {
-      //Move motor1 in one direction
-      m_motor1.set(.25);
-      //m_motor2.set(0.25); 
-      // m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0.5568968);
-      // m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0.5568968);
+      m_motor1.set(2.0);
     }
+
     else if(m_xbox.getBButton()) {
-      // Move motor1 in other direction
-      m_motor1.set(-.25 ); 
-      //m_motor2.set(-0.25); 
-      //// m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0.5568968);
-      // m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0.5568968);
+      m_motor1.set(-2.0); 
     } 
+
+    else if(m_xbox.getXButton()) {
+      m_motor2.set(2.0);
+    }
+
+    else if(m_xbox.getYButton()) {
+      m_motor2.set(-2.0);
+    }
+    
     else {
-      // Stop motor1
       m_motor1.set(0); 
-      //m_motor2.set(0); 
-      // m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0);
-      // m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0);
+      m_motor2.set(0); 
+    }
+    
+    if(m_xbox.getRightBumperButton()) {
+      m_motor4.set (0.15);
+    }
+
+    else if(m_xbox.getLeftBumperButton()){
+      m_motor4.set (-0.15);
+    }
+
+    else{
+      m_motor4.set (0);
     }
       
 
+    
   }
 }
