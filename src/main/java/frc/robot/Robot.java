@@ -93,10 +93,10 @@ public class Robot extends TimedRobot {
         .idleMode(IdleMode.kCoast);
 
     
-    m_motor1.configure(motor1Config);
-    m_motor2.configure(motor2Config);
-    m_motor3.configure(motor3Config);
-    m_motor4.configure(motor4Config);
+    m_motor1.configure(motor1Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
+    m_motor2.configure(motor2Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
+    m_motor3.configure(motor3Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
+    m_motor4.configure(motor4Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
 
     // m_joystick = new Joystick(kJoystickPort);
     m_xbox = new XboxController(kXboxPort);
