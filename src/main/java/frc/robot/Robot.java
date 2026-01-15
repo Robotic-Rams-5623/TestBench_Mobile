@@ -18,7 +18,6 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 //import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.TimedRobot;
 
 import edu.wpi.first.wpilibj.XboxController;
@@ -76,23 +75,28 @@ public class Robot extends TimedRobot {
     motor1Config
         .inverted(false)
         .idleMode(IdleMode.kCoast);
+
+         
     
     motor2Config
       .inverted(false)
       .idleMode(IdleMode.kCoast);
+
        
     motor3Config
        .inverted(true)
-       .idleMode(IdleMode.kBrake);
+       .idleMode(IdleMode.kCoast);
+
     
     motor4Config
         .inverted(false)
-        .idleMode(IdleMode.kBrake);
+        .idleMode(IdleMode.kCoast);
+
     
-    m_motor1.configure(motor1Config, com.revrobotics.ResetMode.kResetSafeParameters, com.revrobotics.PersistMode.kPersistParameters);
-    m_motor2.configure(motor2Config, com.revrobotics.ResetMode.kResetSafeParameters, com.revrobotics.PersistMode.kPersistParameters);
-    m_motor3.configure(motor3Config, com.revrobotics.ResetMode.kResetSafeParameters, com.revrobotics.PersistMode.kPersistParameters);
-    m_motor4.configure(motor4Config, com.revrobotics.ResetMode.kResetSafeParameters, com.revrobotics.PersistMode.kPersistParameters);
+    m_motor1.configure(motor1Config);
+    m_motor2.configure(motor2Config);
+    m_motor3.configure(motor3Config);
+    m_motor4.configure(motor4Config);
 
     // m_joystick = new Joystick(kJoystickPort);
     m_xbox = new XboxController(kXboxPort);
@@ -114,27 +118,18 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     if(m_xbox.getAButton()) {
-      m_motor2.set(0.8);
-      m_motor3.set(-0.8);
-
-      m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0.5);
-      m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0.5);
+      m_motor1.set(1.0);
+      m_motor2.set(-1.0);
     }
 
     else if(m_xbox.getBButton()) {
-      m_motor2.set(-0.8);
-      m_motor3.set(0.8); 
-      
-      m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0.5);
-      m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0.5);
+      m_motor1.set(-1.0); 
+      m_motor2.set(1.0);
     } 
 
     else {
-    m_motor2.set(-0.8);
-    m_motor3.set(0.8); 
-
-    m_xbox.setRumble(GenericHID.RumbleType.kRightRumble,0);
-    m_xbox.setRumble(GenericHID.RumbleType.kLeftRumble,0);
+      m_motor1.set(0); 
+      m_motor2.set(0); 
     }
     
   }
