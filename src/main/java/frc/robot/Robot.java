@@ -6,6 +6,9 @@ package frc.robot;
 
 
 
+import static edu.wpi.first.units.Units.RPM;
+
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -17,6 +20,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Encoder;
 //import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
@@ -35,10 +39,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class Robot extends TimedRobot {
   // KONSTANTS
-  private static final int kMotor_1 = 10;
-  private static final int kMotor_2 = 11;
-  private static final int kMotor_3 = 12;
-  private static final int kMotor_4 = 13;
+  // private static final int kMotor_1 = 11;
+  // private static final int kMotor_2 = 12;
+  // private static final int kMotor_3 = 13;
+  private static final int kMotor_4 = 1;
   //private static final int kJoystickPort = 1;
   private static final int kXboxPort = 0;
 
@@ -47,14 +51,16 @@ public class Robot extends TimedRobot {
 
 
   // MOTORS
-  private final SparkMax m_motor1;
-  private final SparkMax m_motor2;
-  private final SparkMax m_motor3;
+  // private final SparkMax m_motor1;
+  // private final SparkMax m_motor2;
+  // private final SparkMax m_motor3;
   private final SparkFlex m_motor4;
-  private SparkMaxConfig motor1Config;
-  private SparkMaxConfig motor2Config;
-  private SparkFlexConfig motor3Config;
+  // private SparkMaxConfig motor1Config;
+  // private SparkMaxConfig motor2Config;
+  // private SparkFlexConfig motor3Config;
   private SparkFlexConfig motor4Config;
+  private RelativeEncoder flywheelEncoder;
+
 
   // JOYSTICKS
   // private final Joystick m_joystick;
@@ -62,30 +68,31 @@ public class Robot extends TimedRobot {
 
   /** Called once at the beginning of the robot program. */
   public Robot() {
-    m_motor1 = new SparkMax(kMotor_1, MotorType.kBrushless);
-    m_motor2 = new SparkMax(kMotor_2, MotorType.kBrushless);
-    m_motor3 = new SparkMax(kMotor_3, MotorType.kBrushless);
+    // m_motor1 = new SparkMax(kMotor_1, MotorType.kBrushless);
+    // m_motor2 = new SparkMax(kMotor_2, MotorType.kBrushless);
+    // m_motor3 = new SparkMax(kMotor_3, MotorType.kBrushless);
     m_motor4 = new SparkFlex(kMotor_4, MotorType.kBrushless);
 
-    motor1Config = new SparkMaxConfig();
-    motor2Config = new SparkMaxConfig();
-    motor3Config = new SparkFlexConfig();
+    // motor1Config = new SparkMaxConfig();
+    // motor2Config = new SparkMaxConfig();
+    // motor3Config = new SparkFlexConfig();
     motor4Config = new SparkFlexConfig();
 
-    motor1Config
-        .inverted(false)
-        .idleMode(IdleMode.kCoast);
+    // flywheelEncoder = m_motor4.getEncoder();
+
+    // motor1Config
+    //     .inverted(false)
+    //     .idleMode(IdleMode.kCoast);
 
          
     
-    motor2Config
-      .inverted(false)
-      .idleMode(IdleMode.kCoast);
-
+    // motor2Config
+    //   .inverted(false)
+    //   .idleMode(IdleMode.kCoast);
        
-    motor3Config
-       .inverted(true)
-       .idleMode(IdleMode.kCoast);
+    // motor3Config
+    //    .inverted(false)
+    //    .idleMode(IdleMode.kCoast);
 
     
     motor4Config
@@ -93,9 +100,9 @@ public class Robot extends TimedRobot {
         .idleMode(IdleMode.kCoast);
 
     
-    m_motor1.configure(motor1Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
-    m_motor2.configure(motor2Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
-    m_motor3.configure(motor3Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
+    // m_motor1.configure(motor1Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
+    // m_motor2.configure(motor2Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
+    // m_motor3.configure(motor3Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
     m_motor4.configure(motor4Config,ResetMode.kResetSafeParameters,PersistMode.kPersistParameters);
 
     // m_joystick = new Joystick(kJoystickPort);
@@ -118,19 +125,18 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     if(m_xbox.getAButton()) {
-      m_motor1.set(1.0);
-      m_motor2.set(-1.0);
+      m_motor4.set(0.6);
     }
 
-    else if(m_xbox.getBButton()) {
-      m_motor1.set(-1.0); 
-      m_motor2.set(1.0);
-    } 
+    else if (m_xbox.getBButton()) {
+      m_motor4.set(-0.6);
+    }
 
     else {
-      m_motor1.set(0); 
-      m_motor2.set(0); 
-    }
+      m_motor4.set(0);
+    } 
+
+
     
   }
 }
